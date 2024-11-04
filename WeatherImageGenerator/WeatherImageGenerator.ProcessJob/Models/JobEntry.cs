@@ -1,7 +1,7 @@
 using Azure.Data.Tables;
 using Azure;
 
-namespace WeatherImageGenerator.StartJob.Models;
+namespace WeatherImageGenerator.ProcessJob.Models;
 
 public class JobEntry : ITableEntity
 {

@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "WeatherImageGenerator.ProcessJob": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7155",
+      "launchBrowser": false
+    }
+  }
+}

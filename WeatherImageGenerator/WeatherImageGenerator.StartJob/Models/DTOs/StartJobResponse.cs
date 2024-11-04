@@ -1,4 +1,4 @@
-namespace WeatherImageGenerator.Models.DTOs;
+namespace WeatherImageGenerator.StartJob.Models.DTOs;
 
 public class StartJobResponse
 {

@@ -3,10 +3,10 @@ using Azure.Storage.Queues;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using WeatherImageGenerator.Models;
-using WeatherImageGenerator.Models.DTOs;
+using WeatherImageGenerator.StartJob.Models;
+using WeatherImageGenerator.StartJob.Models.DTOs;
 
-namespace WeatherImageGenerator
+namespace WeatherImageGenerator.StartJob
 {
     public class StartJobFunction
     {
@@ -34,8 +34,11 @@ namespace WeatherImageGenerator
             var queueClient = new QueueClient(_queueConnectionString, _queueName);
             await queueClient.CreateIfNotExistsAsync();
 
-            // add jobId as a message to the queue
-            await queueClient.SendMessageAsync(jobId);
+            // encode jobId in Base64
+            var base64JobId = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(jobId));
+
+            // add the Base64-encoded jobId as a message to the queue
+            await queueClient.SendMessageAsync(base64JobId);
 
             _logger.LogInformation($"JobId {jobId} has been added to the queue.");
 
