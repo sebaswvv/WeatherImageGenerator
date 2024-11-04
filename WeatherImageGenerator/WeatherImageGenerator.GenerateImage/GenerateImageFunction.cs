@@ -50,19 +50,17 @@ namespace WeatherImageGenerator.GenerateImage
                 // Prepare the text lines
                 var lines = new[]
                 {
-                    $"Station: {weatherStation.StationName}",
                     $"Region: {weatherStation.Region}",
                     $"Temp: {weatherStation.Temperature}°C",
                     $"Wind: {weatherStation.WindSpeed} km/h"
                 };
 
-                // Draw each line of text with a small vertical offset for each new line
                 float x = 10;
-                float y = 30; // Start a bit down from the top
+                float y = 30;
                 foreach (var line in lines)
                 {
                     canvas.DrawText(line, x, y, paint);
-                    y += paint.TextSize + 5; // Move down by text size plus a small padding
+                    y += paint.TextSize + 5;
                 }
 
                 // save the modified image to a MemoryStream as JPEG
