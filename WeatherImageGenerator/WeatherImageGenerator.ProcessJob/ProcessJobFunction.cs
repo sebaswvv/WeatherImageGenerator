@@ -44,6 +44,12 @@ namespace WeatherImageGenerator.ProcessJob
             // call the buienradar API to get the weather stations
             var weatherStations = await _weatherStationService.GetWeatherStationsAsync();
             
+            // add the jobId to each weather station
+            foreach (var station in weatherStations)
+            {
+                station.JobId = jobId;
+            }
+            
             // add a message to the new queue called GenerateImageQueue foreach station
             var queueClient = new QueueClient(_queueConnectionString, _generateImageQueueName);
             await queueClient.CreateIfNotExistsAsync();
