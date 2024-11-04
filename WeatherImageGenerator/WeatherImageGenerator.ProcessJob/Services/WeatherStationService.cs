@@ -1,5 +1,5 @@
 using System.Text.Json;
-using WeatherImageGenerator.Models;
+using WeatherImageGenerator.ProcessJob.Models;
 
 namespace WeatherImageGenerator.ProcessJob.Services
 {

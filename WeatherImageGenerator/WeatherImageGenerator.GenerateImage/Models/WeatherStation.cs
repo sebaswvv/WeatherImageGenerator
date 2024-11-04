@@ -1,4 +1,4 @@
-namespace WeatherImageGenerator.ProcessJob.Models
+namespace WeatherImageGenerator.GenerateImage.Models
 {
     public class WeatherStation
     {
