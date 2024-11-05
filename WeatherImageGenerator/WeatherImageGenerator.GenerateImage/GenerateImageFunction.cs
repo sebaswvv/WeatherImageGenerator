@@ -90,7 +90,7 @@ namespace WeatherImageGenerator.GenerateImage
         private async Task UpdateJobWithRetry(string jobId)
         {
             var tableClient = new TableClient(_tableConnectionString, _tableName);
-            int maxRetries = 5;
+            int maxRetries = 10;
             int retryCount = 0;
             TimeSpan delay = TimeSpan.FromSeconds(1);
 
