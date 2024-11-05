@@ -8,7 +8,7 @@ namespace WeatherImageGenerator.GenerateImage.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger<ImageGenerationService> _logger;
-        private const string BackgroundImageUrl = "https://example.com/background.jpg";
+        private const string BackgroundImageUrl = "https://picsum.photos/200";
 
         public ImageGenerationService(HttpClient httpClient, ILogger<ImageGenerationService> logger)
         {
