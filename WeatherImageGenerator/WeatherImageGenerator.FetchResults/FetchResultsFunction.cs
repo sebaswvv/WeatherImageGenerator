@@ -34,59 +34,47 @@ namespace WeatherImageGenerator.FetchResults
         {
             _logger.LogInformation($"Fetching results for JobId: {jobId}");
 
-            // Initialize Table Client
-            var tableClient = new TableClient(_tableConnectionString, _tableName);
-
-            // Attempt to retrieve the job entity from Table Storage
+            // attempt to retrieve the job entity from Table Storage
             try
             {
-                var jobEntry = await tableClient.GetEntityAsync<JobEntry>("WeatherJob", jobId);
+                // generate list of URLs for the generated images
+                var containerClient = _blobServiceClient.GetBlobContainerClient("weatherimages");
+                var urls = new List<string>();
 
-                // Check if the job is completed
-                if (jobEntry.Value.TotalImages == jobEntry.Value.ImagesCompleted)
+                // first get all images from the folder with the job id
+                var blobItems = containerClient.GetBlobs(prefix: jobId);
+                
+                // generate a SAS token for each image
+                foreach (var blobItem in blobItems)
                 {
-                    // Generate list of URLs for the generated images
-                    var containerClient = _blobServiceClient.GetBlobContainerClient("weatherimages");
-                    var urls = new List<string>();
-
-                    // first get all images from the folder with the job id
-                    var blobItems = containerClient.GetBlobs(prefix: jobId);
-                    foreach (var blobItem in blobItems)
+                    // generate a SAS token for each image
+                    var blobClient = containerClient.GetBlobClient(blobItem.Name);
+                    var sasBuilder = new BlobSasBuilder
                     {
-                        // generate a SAS token for each image
-                        var blobClient = containerClient.GetBlobClient(blobItem.Name);
-                        var sasBuilder = new BlobSasBuilder
-                        {
-                            BlobContainerName = blobClient.BlobContainerName,
-                            BlobName = blobClient.Name,
-                            Resource = "b",
-                            StartsOn = DateTimeOffset.UtcNow,
-                            ExpiresOn = DateTimeOffset.UtcNow.AddHours(2)
-                        };
-                        
-                        sasBuilder.SetPermissions(BlobSasPermissions.Read);
-                        
-                        var sasToken = sasBuilder.ToSasQueryParameters(
-                            new StorageSharedKeyCredential(
-                                Environment.GetEnvironmentVariable("AzureAccountName"), 
-                                Environment.GetEnvironmentVariable("AzureWebJobsStorageKey"))
-                            );
-                        
-                        urls.Add($"{blobClient.Uri}?{sasToken}");
-                    }
+                        BlobContainerName = blobClient.BlobContainerName,
+                        BlobName = blobClient.Name,
+                        Resource = "b",
+                        StartsOn = DateTimeOffset.UtcNow,
+                        ExpiresOn = DateTimeOffset.UtcNow.AddHours(2)
+                    };
+                    
+                    sasBuilder.SetPermissions(BlobSasPermissions.Read);
+                    
+                    var sasToken = sasBuilder.ToSasQueryParameters(
+                        new StorageSharedKeyCredential(
+                            Environment.GetEnvironmentVariable("AzureAccountName"), 
+                            Environment.GetEnvironmentVariable("AzureWebJobsStorageKey"))
+                        );
+                    
+                    urls.Add($"{blobClient.Uri}?{sasToken}");
+                }
+                
+                var numberOfImages = urls.Count;
 
-                    // Create the response with the list of URLs
-                    var response = req.CreateResponse(HttpStatusCode.OK);
-                    await response.WriteAsJsonAsync(new { jobId, status = "Completed", images = urls });
-                    return response;
-                }
-                else
-                {
-                    // If the job is not completed, return status as pending
-                    var response = req.CreateResponse(HttpStatusCode.Accepted);
-                    await response.WriteAsJsonAsync(new { jobId, status = "Pending", images = new List<string>() });
-                    return response;
-                }
+                // create the response with the list of URLs
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                await response.WriteAsJsonAsync(new { jobId, numberOfImages, urls });
+                return response;
             }
             catch (Exception e)
             {
