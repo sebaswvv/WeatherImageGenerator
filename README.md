@@ -42,5 +42,12 @@ az deployment group create \
 ```
 
 
+## TODO:
+- [ ] Check the requirements
+- [ ] Deploy start job
+- [ ] Deploy process job
+- [ ] Deploy generate image
+- [ ] Deploy fetch results
+
 
 
