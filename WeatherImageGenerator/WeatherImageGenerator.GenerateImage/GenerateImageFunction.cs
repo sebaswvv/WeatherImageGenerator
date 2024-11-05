@@ -1,12 +1,14 @@
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Azure;
+using Azure.Data.Tables;
 using Azure.Storage.Blobs;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using WeatherImageGenerator.GenerateImage.Models;
-using Azure.Data.Tables;
 
 namespace WeatherImageGenerator.GenerateImage
 {
@@ -43,11 +45,10 @@ namespace WeatherImageGenerator.GenerateImage
                 var paint = new SKPaint
                 {
                     Color = SKColors.White,
-                    TextSize = 16, // smaller font size
+                    TextSize = 16,
                     IsAntialias = true
                 };
 
-                // Prepare the text lines
                 var lines = new[]
                 {
                     $"Region: {weatherStation.Region}",
@@ -63,14 +64,12 @@ namespace WeatherImageGenerator.GenerateImage
                     y += paint.TextSize + 5;
                 }
 
-                // save the modified image to a MemoryStream as JPEG
                 using var outputStream = new MemoryStream();
                 using var skImageEncoded = SKImage.FromBitmap(skImage);
                 skImageEncoded.Encode(SKEncodedImageFormat.Jpeg, 100).SaveTo(outputStream);
 
                 outputStream.Position = 0;
 
-                // upload the image to Blob Storage
                 var containerClient = _blobServiceClient.GetBlobContainerClient("weatherimages");
                 await containerClient.CreateIfNotExistsAsync();
                 
@@ -78,20 +77,56 @@ namespace WeatherImageGenerator.GenerateImage
                 await blobClient.UploadAsync(outputStream, overwrite: true);
 
                 _logger.LogInformation($"Image successfully saved to Blob Storage as {weatherStation.JobId}/{weatherStation.StationId}.jpg");
-                
-                // initialize Table Client to update job progress
-                var tableClient = new TableClient(_tableConnectionString, _tableName);
-                
-                // fetch the job entry from Table Storage
-                var jobEntry = await tableClient.GetEntityAsync<JobEntry>("WeatherJob", weatherStation.JobId);
-                jobEntry.Value.ImagesCompleted++;
-       
-                await tableClient.UpdateEntityAsync(jobEntry.Value, jobEntry.Value.ETag);
+
+                // update the job in Table Storage with retries
+                await UpdateJobWithRetry(weatherStation.JobId);
             }
             else
             {
                 _logger.LogError($"Failed to get background image from external API. Status code: {response.StatusCode}");
             }
+        }
+
+        private async Task UpdateJobWithRetry(string jobId)
+        {
+            var tableClient = new TableClient(_tableConnectionString, _tableName);
+            int maxRetries = 5;
+            int retryCount = 0;
+            TimeSpan delay = TimeSpan.FromSeconds(1);
+
+            while (retryCount < maxRetries)
+            {
+                try
+                {
+                    // retrieve the latest entity version
+                    var jobEntry = await tableClient.GetEntityAsync<JobEntry>("WeatherJob", jobId);
+
+                    // increment images completed
+                    jobEntry.Value.ImagesCompleted++;
+
+                    // update entity with current ETag
+                    await tableClient.UpdateEntityAsync(jobEntry.Value, jobEntry.Value.ETag);
+
+                    _logger.LogInformation("Successfully updated job progress in Table Storage.");
+                    return; // exit on success
+                }
+                catch (RequestFailedException ex) when (ex.Status == 412)
+                {
+                    retryCount++;
+                    _logger.LogWarning($"ETag mismatch detected. Retry {retryCount}/{maxRetries} in {delay.TotalSeconds} seconds.");
+
+                    // wait with exponential backoff
+                    await Task.Delay(delay);
+                    delay = delay * 2;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"An error occurred while updating Table Storage: {ex.Message}");
+                    throw;
+                }
+            }
+
+            _logger.LogError($"Failed to update job progress after {maxRetries} retries due to ETag conflicts.");
         }
     }
 }
