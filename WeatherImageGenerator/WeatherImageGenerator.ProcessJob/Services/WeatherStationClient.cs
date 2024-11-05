@@ -6,6 +6,7 @@ namespace WeatherImageGenerator.ProcessJob.Services
     public class WeatherStationClient
     {
         private readonly HttpClient _httpClient;
+        private const string BuieRadarApiUrl = "https://api.buienradar.nl/data/public/2.0/jsonfeed";
 
         public WeatherStationClient(HttpClient httpClient)
         {
@@ -14,7 +15,7 @@ namespace WeatherImageGenerator.ProcessJob.Services
 
         public async Task<List<WeatherStation>> GetWeatherStationsAsync()
         {
-            var response = await _httpClient.GetStringAsync("https://api.buienradar.nl/data/public/2.0/jsonfeed");
+            var response = await _httpClient.GetStringAsync(BuieRadarApiUrl);
             
             using JsonDocument doc = JsonDocument.Parse(response);
             var stationMeasurements = doc.RootElement

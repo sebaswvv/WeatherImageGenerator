@@ -8,6 +8,7 @@ namespace WeatherImageGenerator.GenerateImage.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger<ImageGenerationService> _logger;
+        private const string BackgroundImageUrl = "https://example.com/background.jpg";
 
         public ImageGenerationService(HttpClient httpClient, ILogger<ImageGenerationService> logger)
         {
@@ -17,7 +18,7 @@ namespace WeatherImageGenerator.GenerateImage.Services
 
         public async Task<MemoryStream> GenerateImageAsync(WeatherStation weatherStation)
         {
-            var response = await _httpClient.GetAsync("https://picsum.photos/200");
+            var response = await _httpClient.GetAsync(BackgroundImageUrl);
 
             if (response.IsSuccessStatusCode)
             {
