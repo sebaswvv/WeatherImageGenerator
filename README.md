@@ -35,6 +35,9 @@ Run the following command in PowerShell:
 With the following parameters:
 - resourceGroup: The name of the resource group to deploy the resources to.
 - location: The Azure region to deploy the resources to.
+
+Make sure you are in the Deployment folder :)
+
 ```powershell
 ./deploy.ps1 -resourceGroup <Resource Group Name> -location <Azure Region (Make sure this is the same as the RG location)>
 ```
