@@ -28,6 +28,14 @@
 
 
 ## How to deploy:
+Run the following command in PowerShell:
+
+With the following parameters:
+- resourceGroup: The name of the resource group to deploy the resources to.
+- location: The Azure region to deploy the resources to.
+```bash
+pwsh deploy.ps1 -resourceGroup "devopsass" -location "westeurope"
+```
 
 ## TODO:
 - [ ] Check the requirements
