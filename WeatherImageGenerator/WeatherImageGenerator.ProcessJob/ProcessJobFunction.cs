@@ -1,7 +1,4 @@
-using System;
-using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Azure.Data.Tables;
 using Azure.Storage.Queues;
 using Microsoft.Azure.Functions.Worker;
@@ -9,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using WeatherImageGenerator.ProcessJob.Models;
 using WeatherImageGenerator.ProcessJob.Services;
 using System.Text;
-using Azure;
 
 namespace WeatherImageGenerator.ProcessJob
 {
@@ -20,12 +16,12 @@ namespace WeatherImageGenerator.ProcessJob
         private readonly string _tableConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
         private readonly string _tableName = "WeatherImageGeneratorJobs";
         private readonly string _generateImageQueueName = "generateimagequeue";
-        private readonly WeatherStationService _weatherStationService;
+        private readonly WeatherStationClient _weatherStationClient;
 
         public ProcessJobFunction(ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<ProcessJobFunction>();
-            _weatherStationService = new WeatherStationService(new HttpClient());
+            _weatherStationClient = new WeatherStationClient(new HttpClient());
         }
 
         [Function("ProcessJob")]
@@ -42,7 +38,7 @@ namespace WeatherImageGenerator.ProcessJob
             jobEntry.Value.Status = "Stations Retrieved";
             
             // call the buienradar API to get the weather stations
-            var weatherStations = await _weatherStationService.GetWeatherStationsAsync();
+            var weatherStations = await _weatherStationClient.GetWeatherStationsAsync();
             
             // add the jobId to each weather station
             foreach (var station in weatherStations)

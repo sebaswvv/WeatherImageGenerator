@@ -3,11 +3,11 @@ using WeatherImageGenerator.ProcessJob.Models;
 
 namespace WeatherImageGenerator.ProcessJob.Services
 {
-    public class WeatherStationService
+    public class WeatherStationClient
     {
         private readonly HttpClient _httpClient;
 
-        public WeatherStationService(HttpClient httpClient)
+        public WeatherStationClient(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
