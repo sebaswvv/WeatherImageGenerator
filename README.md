@@ -23,9 +23,11 @@
 
 4. HTTPTrigger Function - FetchResults
 - Accepts an HTTP request (GET) with a jobId.
-- Fetches the status of the job from Table Storage.
-- If the job is completed, returns a list of URLs for the generated images.
+- Fetches all images generated for the jobId from Blob Storage.
 
+
+## Data
+The images are all stored in Blob Storage. The status of the processing is stored in Table Storage. Communication between the functions is done through Azure Queues. There are two queues: StartJobQueue and GenerateImageQueue.
 
 ## How to deploy:
 Run the following command in PowerShell:
@@ -33,13 +35,6 @@ Run the following command in PowerShell:
 With the following parameters:
 - resourceGroup: The name of the resource group to deploy the resources to.
 - location: The Azure region to deploy the resources to.
-```bash
-pwsh deploy.ps1 -resourceGroup "devopsass" -location "westeurope"
+```powershell
+./deploy.ps1 -resourceGroup <Resource Group Name> -location <Azure Region (Make sure this is the same as the RG location)>
 ```
-
-## TODO:
-- [ ] Check the requirements
-- [ ] Add status endpoint
-
-
-

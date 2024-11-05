@@ -1,0 +1,19 @@
+### Fetch Images by Job ID
+
+GET http://localhost:7071/api/fetchresults/633cdf17-1b40-449d-ac4d-b0510a0dca07
+Content-Type: application/json
+
+###
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+	"jobId": "04d683b4-ce70-4977-a1fb-4fc8de523c1f",
+	"numberOfImages": 40,
+	"urls": [
+		"https://weatherappsta.blob.core.windows.net/weatherimages/04d683b4-ce70-4977-a1fb-4fc8de523c1f/6215.jpg?sv=2024-11-04&st=2024-11-05T20%3A05%3A15Z&se=2024-11-05T22%3A05%3A15Z&sr=b&sp=r&sig=dCRAWfIVD8Fw318bNpqD7eiYueqArSxt%2BHDLxHhC13g%3D",
+		"https://weatherappsta.blob.core.windows.net/weatherimages/04d683b4-ce70-4977-a1fb-4fc8de523c1f/6225.jpg?sv=2024-11-04&st=2024-11-05T20%3A05%3A15Z&se=2024-11-05T22%3A05%3A15Z&sr=b&sp=r&sig=%2FHs8kjdxJoNjNGHeV3YDJGF9ny6g8QzaUMMuo%2F0JWh4%3D",
+		"... (remaining URLs omitted for brevity)"
+	]
+}
