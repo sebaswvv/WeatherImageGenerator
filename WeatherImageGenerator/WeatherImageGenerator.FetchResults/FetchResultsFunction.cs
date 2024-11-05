@@ -18,8 +18,6 @@ namespace WeatherImageGenerator.FetchResults
     {
         private readonly ILogger<FetchResultsFunction> _logger;
         private readonly BlobServiceClient _blobServiceClient;
-        private readonly string _tableConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
-        private readonly string _tableName = "WeatherImageGeneratorJobs";
 
         public FetchResultsFunction(ILogger<FetchResultsFunction> logger)
         {
