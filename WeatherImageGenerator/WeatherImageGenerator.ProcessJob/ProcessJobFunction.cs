@@ -14,8 +14,8 @@ namespace WeatherImageGenerator.ProcessJob
         private readonly ILogger _logger;
         private readonly string _queueConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
         private readonly string _tableConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
-        private readonly string _tableName = "WeatherImageGeneratorJobs";
-        private readonly string _generateImageQueueName = "generateimagequeue";
+        private const string TableName = "WeatherImageGeneratorJobs";
+        private const string GenerateImageQueueName = "generateimagequeue";
         private readonly WeatherStationClient _weatherStationClient;
 
         public ProcessJobFunction(ILoggerFactory loggerFactory)
@@ -31,7 +31,7 @@ namespace WeatherImageGenerator.ProcessJob
             _logger.LogInformation($"Processing job with JobId: {jobId}");
 
             // initialize Table Client to update job progress
-            var tableClient = new TableClient(_tableConnectionString, _tableName);
+            var tableClient = new TableClient(_tableConnectionString, TableName);
             
             // fetch the job entry from Table Storage
             var jobEntry = await tableClient.GetEntityAsync<JobEntry>("WeatherJob", jobId);
@@ -47,7 +47,7 @@ namespace WeatherImageGenerator.ProcessJob
             }
             
             // add a message to the new queue called GenerateImageQueue foreach station
-            var queueClient = new QueueClient(_queueConnectionString, _generateImageQueueName);
+            var queueClient = new QueueClient(_queueConnectionString, GenerateImageQueueName);
             await queueClient.CreateIfNotExistsAsync();
             
             foreach (var station in weatherStations)
