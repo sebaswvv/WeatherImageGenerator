@@ -1,14 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Azure.Data.Tables;
 using Azure.Storage.Blobs;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
-using System.Text.Json;
-using WeatherImageGenerator.FetchResults.Models;
 using Azure.Storage.Sas;
 using Azure.Storage;
 
