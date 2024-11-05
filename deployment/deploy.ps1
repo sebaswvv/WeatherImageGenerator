@@ -1,18 +1,34 @@
+# parameter for resource group
+param (
+    [string]$resourceGroup,
+    [string]$location
+)
+
 # set variables
 $solutionDirectory = "../WeatherImageGenerator"
-$prefix = "weatherimagegen"
+$prefix = "weatherapp"
 $functionAppProjects = @(
-    "ProcessJob",
     "StartJob",
+    "ProcessJob",
     "FetchResults",
     "GenerateImage"
 )
-$resourceGroup = "DevOpsAssignmentGroup"
 $outputDirectory = "./publish"
+$bicepFile = "main.bicep"
 
 # delete the output directory if it exists
 if (Test-Path $outputDirectory) {
     Remove-Item -Recurse -Force $outputDirectory
+}
+
+# deploy the Bicep file to set up infrastructure
+Write-Host "Deploying infrastructure with Bicep file..."
+az deployment group create --resource-group $resourceGroup --template-file $bicepFile --parameters location=$location
+
+# check if Bicep deployment was successful
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Bicep deployment failed. Exiting."
+    exit $LASTEXITCODE
 }
 
 # publish the function apps
@@ -51,12 +67,6 @@ foreach ($project in $functionAppProjects) {
     Write-Host "Creating zip package for: $project"
     $sourcePath = "$outputDirectory/$project"
     $destinationPath = "$outputDirectory/$project.zip"
-    
-    # # use Get-ChildItem -Force to include hidden files in the zip
-    # Get-ChildItem -Path "$sourcePath" -Recurse -Force | Compress-Archive -DestinationPath $destinationPath -Update
-
-    # just zip
-    # Get-ChildItem -Path "$sourcePath\*" -Recurse | Compress-Archive -DestinationPath $destinationPath -Update
 
     # gather all non-hidden files and directories, plus explicitly add .azurefunctions folder
     $itemsToZip = Get-ChildItem -Path "$sourcePath\*" -Recurse -Force | Where-Object { 
@@ -75,12 +85,12 @@ foreach ($project in $functionAppProjects) {
     # compress the selected unique items into the zip file
     $itemsToZip | Compress-Archive -DestinationPath $destinationPath -Update
 
-        # verify that the zip file was created
-        if (!(Test-Path $destinationPath)) {
-            Write-Host "Failed to create zip package for $project. Skipping deployment."
-            continue
-        }
+    # verify that the zip file was created
+    if (!(Test-Path $destinationPath)) {
+        Write-Host "Failed to create zip package for $project. Skipping deployment."
+        continue
     }
+}
 
 # deploy each function app
 foreach ($project in $functionAppProjects) {
