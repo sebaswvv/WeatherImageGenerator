@@ -26,3 +26,21 @@
 - Fetches the status of the job from Table Storage.
 - If the job is completed, returns a list of URLs for the generated images.
 
+
+## How to deploy:
+```bash
+az group create --name DevOpsAssignmentGroup --location westeurope
+```
+
+```bash
+az deployment group create \
+  --resource-group DevOpsAssignmentGroup \
+  --template-file main.bicep \
+  --parameters functionAppName="WeatherImageFunctionApp" \
+              storageAccountName="weatherimagestorageacct" \
+              appServicePlanName="WeatherImageAppServicePlan"
+```
+
+
+
+
