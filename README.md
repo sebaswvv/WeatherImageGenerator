@@ -28,19 +28,6 @@
 
 
 ## How to deploy:
-```bash
-az group create --name DevOpsAssignmentGroup --location westeurope
-```
-
-```bash
-az deployment group create \
-  --resource-group DevOpsAssignmentGroup \
-  --template-file main.bicep \
-  --parameters functionAppName="WeatherImageFunctionApp" \
-              storageAccountName="weatherimagestorageacct" \
-              appServicePlanName="WeatherImageAppServicePlan"
-```
-
 
 ## TODO:
 - [ ] Check the requirements
