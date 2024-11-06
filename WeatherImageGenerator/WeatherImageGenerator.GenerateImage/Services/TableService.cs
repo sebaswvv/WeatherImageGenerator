@@ -28,14 +28,13 @@ namespace WeatherImageGenerator.GenerateImage.Services
                 {
                     var jobEntry = await _tableClient.GetEntityAsync<JobEntry>("WeatherJob", jobId);
                     jobEntry.Value.ImagesCompleted++;
-                    await _tableClient.UpdateEntityAsync(jobEntry.Value, jobEntry.Value.ETag);
                     
                     // check if the ImagesCompleted count is equal to the total number of stations
-                    if (jobEntry.Value.ImagesCompleted == jobEntry.Value.TotalImages)
-                    {
+                    if (jobEntry.Value.ImagesCompleted == jobEntry.Value.TotalImages) {
                         jobEntry.Value.Status = "Finished";
-                        await _tableClient.UpdateEntityAsync(jobEntry.Value, jobEntry.Value.ETag);
                     }
+                    
+                    await _tableClient.UpdateEntityAsync(jobEntry.Value, jobEntry.Value.ETag);
 
                     _logger.LogInformation("Successfully updated job progress in Table Storage.");
                     return;
