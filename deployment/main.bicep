@@ -1,6 +1,6 @@
 param location string = resourceGroup().location
+param prefix string
 
-var prefix = 'weatherapp'
 var serverFarmName = '${prefix}sf'
 var storageAccountName = '${prefix}sta'
 

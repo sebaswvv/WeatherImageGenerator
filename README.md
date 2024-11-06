@@ -25,11 +25,15 @@
 - Accepts an HTTP request (GET) with a jobId.
 - Fetches all images generated for the jobId from Blob Storage.
 
-
 ## Data
 The images are all stored in Blob Storage. The status of the processing is stored in Table Storage. Communication between the functions is done through Azure Queues. There are two queues: StartJobQueue and GenerateImageQueue.
 
 ## How to deploy:
+To deploy the code, a .ps1 script is provided. This script does the following:
+1. Creates a resource group.
+2. Deploy the resources to the resource group.
+3. Publish the functions to Azure.
+
 Run the following command in PowerShell:
 
 With the following parameters:
@@ -39,5 +43,5 @@ With the following parameters:
 Make sure you are in the Deployment folder :)
 
 ```powershell
-./deploy.ps1 -resourceGroup <Resource Group Name> -location <Azure Region (Make sure this is the same as the RG location)>
+./deploy.ps1 -resourceGroup <Name of the Resource group> -location <The Azure location> -prefix <The prefix of the resources>
 ```

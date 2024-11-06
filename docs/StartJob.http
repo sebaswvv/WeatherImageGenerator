@@ -1,6 +1,9 @@
 ### Start Image Generation Job
 
-POST http://localhost:7071/api/StartJob
+@baseURL = https://inhollandstartjob.azurewebsites.net
+@code = XAFJwpffWUtffzZS7CYYQ30U_3nz6si19cu7tkDiWSLXAzFur7v17Q%3D%3D
+
+POST {{baseURL}}/api/startjob?code={{code}}
 Content-Type: application/json
 
 ###
