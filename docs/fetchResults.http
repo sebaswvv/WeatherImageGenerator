@@ -1,8 +1,8 @@
 ### Fetch Images by Job ID
 
-@baseURl = https://inhollandfetchresults.azurewebsites.net
+@baseURl = https://inhollanddevopsfetchresults.azurewebsites.net
 @jobId = ef5f890a-6bfc-45d4-aefb-a91ec5223a4b
-@code = h6lY6mNICdBLqj7fUMspbIH_y-zlPh2bE5dqlzF7eFc-AzFu00e5jQ%3D%3D
+@code = RUlr-gC-zO2DYoq8mUHo_npqCa5HYVRX57P9pQsQsEqZAzFuWSvWfg%3D%3D
 
 GET {{baseURl}}/api/fetchresults/{{jobId}}?code={{code}}
 Content-Type: application/json
